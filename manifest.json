@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "上海大学课表颜色插件",
+  "version": "1.0",
+  "description": "根据课程周次信息为课表着色",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://jwxt.shu.edu.cn/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://jwxt.shu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
