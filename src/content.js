@@ -651,6 +651,8 @@ function applyColorsToSchedule(courseData) {
             }
         }
     }
+
+    if (table) delete table.dataset.isApplyingColors; // 移除标记
 }
 
 // 插入或更新课表下方的图例
