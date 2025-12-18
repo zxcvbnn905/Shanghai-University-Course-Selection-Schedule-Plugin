@@ -449,10 +449,13 @@ function addColorControlPanel() {
         
         <div id="panel-content">
             <div style="margin-bottom: 10px; font-size: 12px; color: #666; background: #f8f9fa; padding: 8px; border-radius: 4px;">
-                <div>1-8周: 前8周有课</div>
-                <div>9-16周: 后8周有课</div>
-                <div>1-16周: 全学期有课</div>
-                <div>不规则: 其他时间安排</div>
+                <div style='display: flex; flex-wrap: wrap; align-items: center; gap: 10px;'>
+                    <div style='display: flex; align-items: center;'><p style='margin-right:5px;background-color:#ff9966;height:15px;width:30px;'></p>1-8周</div>
+                    <div style='display: flex; align-items: center;'><p style='margin-right:5px;background-color:#e0c61e;height:15px;width:30px;'></p>9-16周</div>
+                    <div style='display: flex; align-items: center;'><p style='margin-right:5px;background-color:#e31212;height:15px;width:30px;'></p>1-16周</div>
+                    <div style='display: flex; align-items: center;'><p style='margin-right:5px;background-color:#195bd5;height:15px;width:30px;'></p>不规则</div>
+                    <div style='display: flex; align-items: center;'><p style='margin-right:5px;background-color:#83fc0d;height:15px;width:30px;'></p>默认</div>
+                </div>
             </div>
             
             <div style="margin-bottom: 10px;">
@@ -632,6 +635,57 @@ function applyColorsToSchedule(courseData) {
 
     // 更新统计信息
     updatePanelStats(stats);
+
+    // 插入或更新课表下方的图例
+    insertOrUpdateLegend();
+
+    // 移除旧的图例
+    const table = document.getElementById(TARGET_TABLE_ID);
+    if (table) {
+        const rows = table.getElementsByTagName('tr');
+        if (rows.length > 0) {
+            const lastRow = rows[rows.length - 1];
+            const legendCell = lastRow.querySelector('td[colspan="8"]');
+            if (legendCell) {
+                lastRow.remove();
+            }
+        }
+    }
+}
+
+// 插入或更新课表下方的图例
+function insertOrUpdateLegend() {
+    const targetTable = document.getElementById(TARGET_TABLE_ID);
+    if (!targetTable) return;
+
+    let legendContainer = document.getElementById('custom-legend-container');
+    if (!legendContainer) {
+        legendContainer = document.createElement('div');
+        legendContainer.id = 'custom-legend-container';
+        legendContainer.style.cssText = `
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        `;
+        // 插入到表格的父节点的末尾
+        targetTable.parentNode.appendChild(legendContainer);
+    }
+
+    const legendHtml = `
+        <div style="font-weight: bold; margin-bottom: 8px;">图例:</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+            ${Object.keys(colorConfig).map(type => `
+                <div style="display: flex; align-items: center;">
+                    <span style="width: 20px; height: 20px; background-color: ${colorConfig[type]}; border: 1px solid #ccc; margin-right: 5px;"></span>
+                    <span>${getWeekTypeName(type)}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    legendContainer.innerHTML = legendHtml;
 }
 
 // 更新面板统计信息
