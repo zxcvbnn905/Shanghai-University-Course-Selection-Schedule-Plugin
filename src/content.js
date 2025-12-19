@@ -60,36 +60,24 @@ async function autoFetchAndApplyCourseData() {
     console.log('🔄 自动获取课程数据...');
 
     // 先检查是否有缓存的课程数据
-    const cachedData = await getCachedCourseData();
-    if (cachedData.length > 0) {
-        console.log(`📋 使用缓存数据: ${cachedData.length} 门课程`);
-        applyColorsToSchedule(cachedData);
-        return;
-    }
+    //const cachedData = await getCachedCourseData();
+    //if (cachedData.length > 0) {
+    //    console.log(`📋 使用缓存数据: ${cachedData.length} 门课程`);
+    //    applyColorsToSchedule(cachedData);
+    //    return;
+    //}
 
     // 如果没有缓存数据，自动获取
     showLoadingMessage('正在获取课程数据...');
 
     try {
-        // 方法1：从API获取
+        // 从API获取
         const apiData = await fetchCourseData();
 
         if (apiData.length > 0) {
             console.log(`✅ 从API获取 ${apiData.length} 门课程`);
             await saveCourseData(apiData);
             applyColorsToSchedule(apiData);
-            hideLoadingMessage();
-            return;
-        }
-
-        // 方法2：从页面提取
-        console.log('尝试从页面提取课程数据...');
-        const pageData = extractCoursesFromPage();
-
-        if (pageData.length > 0) {
-            console.log(`✅ 从页面提取 ${pageData.length} 门课程`);
-            await saveCourseData(pageData);
-            applyColorsToSchedule(pageData);
             hideLoadingMessage();
             return;
         }
@@ -257,47 +245,6 @@ async function fetchCourseData() {
     }
 }
 
-// 从页面提取课程数据
-function extractCoursesFromPage() {
-    const courses = [];
-
-    try {
-        // 查找课程表格
-        const table = document.getElementById('xskbtable');
-        if (!table) {
-            return courses;
-        }
-
-        // 查找所有课程单元格
-        const courseCells = table.querySelectorAll('td[id^="td_"]');
-        courseCells.forEach(cell => {
-            const text = cell.textContent.trim();
-            if (text) {
-                // 解析课程信息
-                const lines = text.split('\n').filter(line => line.trim());
-                if (lines.length >= 2) {
-                    const courseName = lines[0].trim();
-                    const timeInfo = lines[lines.length - 1].trim();
-
-                    if (courseName && timeInfo) {
-                        courses.push({
-                            kcmc: courseName,
-                            sksj: timeInfo,
-                            jxdd: '',
-                            jsxx: ''
-                        });
-                    }
-                }
-            }
-        });
-
-        console.log(`从页面提取到 ${courses.length} 门课程`);
-    } catch (error) {
-        console.error('从页面提取课程失败:', error);
-    }
-
-    return courses;
-}
 
 // 显示加载消息
 function showLoadingMessage(text) {
